@@ -41,8 +41,9 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		//arrange
 		TrackOptimizer tm = new TrackOptimizer();
 		//act
-		tm.pack(this.rawTalks);
+		tm.pack("Writing Fast Tests Against Enterprise Rails 60min");
 		//assert
+		assertTrue("hasNoResult", tm.getResultContainers() != null);
 	}
 
 }
