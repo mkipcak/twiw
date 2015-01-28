@@ -1,10 +1,18 @@
 package com.twiw.trackman;
 
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+
 import junit.framework.TestCase;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.twiw.trackman.bean.Conference;
+import com.twiw.trackman.bean.Session;
+import com.twiw.trackman.bean.Talk;
 
 public class TrackOptimizerEndToEndTest extends TestCase {
 	String rawTalks;
@@ -37,13 +45,23 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 	}
 
 	@Test
-	public void testOneConferenceOneSessionAcceptsOneTalk() {
+	public void testTalkBuilderWorksFineForFormatXXXNNmin() {
 		//arrange
-		TrackOptimizer tm = new TrackOptimizer();
+		TalkBuilder builder = new TalkBuilder();
 		//act
-		tm.pack("Writing Fast Tests Against Enterprise Rails 60min");
+		Talk tk = builder.build("Writing Fast Tests Against Enterprise Rails 60min");
 		//assert
-		assertTrue("hasNoResult", tm.getResultContainers() != null);
+		assertTrue("build failed!", tk.getValue() == 60);
 	}
-
+	@Test
+	public void testOptimizerAcceptsProperSingleLine() {
+		//arrange
+		TalkBuilder builder = new TalkBuilder();
+		TrackOptimizer to = new TrackOptimizer();
+		//act
+		Talk tk = builder.build("Writing Fast Tests Against Enterprise Rails 60min");
+		to.pack(tk);
+		//assert
+		assertTrue("hasNoResult", to.getResultContainers() != null);
+	}
 }
