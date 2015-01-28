@@ -1,5 +1,8 @@
 package com.twiw.trackman;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.twiw.trackman.bean.Talk;
 
 public class TalkBuilder {
@@ -23,5 +26,17 @@ public class TalkBuilder {
 		else {
 			return null;
 		}
+	}
+
+	public List<Talk> buildAll(String content) {
+		List<Talk> l = new ArrayList<Talk>();
+		String[] lines = content.split("\n");
+		for (String line : lines) {
+			Talk talk = build(line);
+			if(talk != null) {
+				l.add(talk);
+			}
+		}
+		return l;
 	}
 }

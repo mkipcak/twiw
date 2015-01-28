@@ -1,5 +1,6 @@
 package com.twiw.trackman.bean;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class Track {
@@ -10,20 +11,20 @@ public class Track {
 		this.sessions = sessions;
 	}
 
-	public List<Session> getSessions() {
-		return sessions;
+	public Iterator<Session> iterator() {
+		return sessions.iterator();
 	}
-
-	public void setSessions(List<Session> sessions) {
-		this.sessions = sessions;
-	}
-
+ 
 	public boolean isEmpty() {
 		return sessions.isEmpty();
 	}
 
 	public boolean add(Session e) {
 		return sessions.add(e);
+	}
+
+	public int size() {
+		return sessions.size();
 	}
 
 

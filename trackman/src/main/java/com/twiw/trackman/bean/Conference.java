@@ -1,21 +1,30 @@
 package com.twiw.trackman.bean;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class Conference {
-	private List<Session> sessions;
+	private List<Track> tracks;
 
-	public Conference(List<Session> sessions) {
+	public Conference(List<Track> tz) {
 		super();
-		this.sessions = sessions;
+		this.tracks = tz;
 	}
 
 	public int size() {
-		return sessions.size();
+		return tracks.size();
 	}
 
 	public boolean isEmpty() {
-		return sessions.isEmpty();
+		return tracks.isEmpty();
 	}
 
+	public boolean add(Track e) {
+		return tracks.add(e);
+	}
+
+	public Iterator<Track> iterator() {
+		return tracks.iterator();
+	}
+ 	
 }
