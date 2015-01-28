@@ -9,3 +9,5 @@
 
 	
 -create 1 conference, 1 track, 1 talk that fits in volume.
+-create session factory created
+-pack talks into session by using first fit.
