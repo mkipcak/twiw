@@ -1,10 +1,10 @@
 package com.twiw.trackman;
 
+import junit.framework.TestCase;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import junit.framework.TestCase;
 
 public class TrackOptimizerEndToEndTest extends TestCase {
 	String rawTalks;
