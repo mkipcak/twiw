@@ -4,7 +4,7 @@ import com.twiw.trackman.bean.Talk;
 
 public class TalkBuilder {
 	
-	static final String LIGHTKEYWORD = "lightinging";
+	static final String LIGHTKEYWORD = "lightning";
 	static final int LIGHTVAL_INMIN = 5;
 
 	public Talk build(String line){
