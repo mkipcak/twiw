@@ -1,0 +1,11 @@
+
+-decision problem, bin packing problem-
+
+-First Fit, MTP, Bin Completion
+
+1 conference
+	-tracks(vol=nn in min)
+		-talks(vol=5 or nn in min)
+
+	
+-create 1 conference, 1 track, 1 talk that fits in volume.
