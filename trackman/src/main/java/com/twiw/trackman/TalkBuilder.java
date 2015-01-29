@@ -27,7 +27,16 @@ public class TalkBuilder {
 			return null;
 		}
 	}
-
+	public List<Talk> buildAll(int... minutes){
+		List<Talk> l = new ArrayList<Talk>();
+		for (int min : minutes) {
+			Talk talk = build("t "+min+"min");
+			if(talk != null) {
+				l.add(talk);
+			}
+		}
+		return l;
+	}
 	public List<Talk> buildAll(String content) {
 		List<Talk> l = new ArrayList<Talk>();
 		String[] lines = content.split("\n");

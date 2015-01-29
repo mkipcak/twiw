@@ -18,24 +18,24 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 	String rawTalks;
 	@Before
 	protected void setUp() throws Exception {
-		this.rawTalks = "Writing Fast Tests Against Enterprise Rails 60min"+
-						"Overdoing it in Python 45min"+
-						"Lua for the Masses 30min"+
-						"Ruby Errors from Mismatched Gem Versions 45min"+
-						"Common Ruby Errors 45min"+
-						"Rails for Python Developers lightning"+
-						"Communicating Over Distance 60min"+
-						"Accounting-Driven Development 45min"+
-						"Woah 30min"+
-						"Sit Down and Write 30min"+
-						"Pair Programming vs Noise 45min"+
-						"Rails Magic 60min"+
-						"Ruby on Rails: Why We Should Move On 60min"+
-						"Clojure Ate Scala (on my project) 45min"+
-						"Programming in the Boondocks of Seattle 30min"+
-						"Ruby vs. Clojure for Back-End Development 30min"+
-						"Ruby on Rails Legacy App Maintenance 60min"+
-						"A World Without HackerNews 30min"+
+		this.rawTalks = "Writing Fast Tests Against Enterprise Rails 60min\n"+
+						"Overdoing it in Python 45min\n"+
+						"Lua for the Masses 30min\n"+
+						"Ruby Errors from Mismatched Gem Versions 45min\n"+
+						"Common Ruby Errors 45min\n"+
+						"Rails for Python Developers lightning\n"+
+						"Communicating Over Distance 60min\n"+
+						"Accounting-Driven Development 45min\n"+
+						"Woah 30min\n"+
+						"Sit Down and Write 30min\n"+
+						"Pair Programming vs Noise 45min\n"+
+						"Rails Magic 60min\n"+
+						"Ruby on Rails: Why We Should Move On 60min\n"+
+						"Clojure Ate Scala (on my project) 45min\n"+
+						"Programming in the Boondocks of Seattle 30min\n"+
+						"Ruby vs. Clojure for Back-End Development 30min\n"+
+						"Ruby on Rails Legacy App Maintenance 60min\n"+
+						"A World Without HackerNews 30min\n"+
 						"User Interface CSS in Rails Apps 30min";
 	}
 	
@@ -86,7 +86,7 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		to.pack(tk, volumesInMin);
 		//assert
 		Conference cnfe = to.getResultContainers();
-		assertTrue("hasNoResult", cnfe.size() == 1);
+
 		Track day 		= cnfe.iterator().next();
 		Session morning = day.iterator().next();
 		assertTrue("remaining space is miscalculated", morning.getRemainingSpace()==2);
@@ -102,7 +102,6 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		to.pack(talks, volumesInMin);
 		//assert
 		Conference cnfe = to.getResultContainers();
-		assertTrue("hasNoResult", cnfe.size() == 1);
 		
 		Track day 		= cnfe.iterator().next();
 		Iterator<Session> dayIterator = day.iterator();
@@ -110,6 +109,26 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		Session afternn = dayIterator.next();
 		assertTrue("morning remaining space is miscalculated", morning.getRemainingSpace()==0);
 		assertTrue("afternn remaining space is miscalculated", afternn.getRemainingSpace()==0);
+	}
+	@Test
+	public void testPackEightTalkForTwoDayVolume() {
+		//arrange
+		TalkBuilder builder = new TalkBuilder();
+		int[] volumesInMin 	= new int[]{ 100, 50 };
+		List<Talk> talks 	= builder.buildAll(30,30,30,10,50,45,45,10);
+		TrackOptimizer to 	= new TrackOptimizer();
+		//act
+		to.pack(talks, volumesInMin);
+		//assert
+		Conference cnfe    = to.getResultContainers();
+		Iterator<Track> it = cnfe.iterator();
+		Track day1 		   = it.next();
+		Track day2 		   = it.next();
+
+		assertTrue("d1Morning remaining space is miscalculated", day1.getFirst().getRemainingSpace()==0);
+		assertTrue("d1Afternn remaining space is miscalculated", day1.getLast().getRemainingSpace()==0);
+		
+		assertTrue("d2Morning remaining space is miscalculated", day2.getFirst().getRemainingSpace()==0);
 	}
 	@Test
 	public void testOptimizerAcceptsProperSingleLine() {

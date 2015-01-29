@@ -27,5 +27,10 @@ public class Track {
 		return sessions.size();
 	}
 
-
+	public Session getFirst(){
+		return sessions.get(0);
+	}
+	public Session getLast(){
+		return sessions.get(sessions.size()-1);
+	}
 }

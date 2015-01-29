@@ -14,7 +14,7 @@ import com.twiw.trackman.bean.Track;
 public class TrackOptimizer {
 	public static final Comparator<Talk> DESCENDING_COMPARATOR = new Comparator<Talk>() {
         public int compare(Talk t, Talk t1) {
-            return t.getValue() - t1.getValue();
+            return t1.getValue() - t.getValue();
         }
     };
 	Conference cfe;
@@ -29,29 +29,28 @@ public class TrackOptimizer {
 	}
 	
 	public void pack(List<Talk> given, int[] volumesInMin){
+		
 		List<Talk> talks = new ArrayList<Talk>();
 		talks.addAll(given);
 		Collections.sort(talks, DESCENDING_COMPARATOR);
-		Session sess = null;
-		SessionFactory sf = new SessionFactory(volumesInMin);
-		Conference ctemp = new Conference(new ArrayList<Track>());
-		Track day = new Track(new ArrayList<Session>());
+		
+		Session sess 		= null;
+		SessionFactory sf 	= new SessionFactory(volumesInMin);
+		Conference ctemp 	= new Conference(new ArrayList<Track>());
+		Track day 			= new Track(new ArrayList<Session>());
 		ctemp.add(day);
 		day.add(sess = sf.create());
 		for (Talk t : talks) {
-			boolean addMore = sess.hasEnoughSpace(t);
-			if(addMore){
-				sess.add(t);
-			} else {
+			boolean fits = sess.hasEnoughSpace(t);
+			if(!fits) {
 				sess = sf.create();
-				if(day.size()==2){
+				if(day.size() == 2){
 					day = new Track(new ArrayList<Session>());
 					ctemp.add(day);
-				} else {
-					sess.add(t);
-				}
+				}  
 				day.add(sess);
 			}
+			sess.add(t);
 		}
 		this.cfe = ctemp;
 	}
