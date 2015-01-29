@@ -110,7 +110,7 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		assertTrue("morning remaining space is miscalculated", morning.getRemainingSpace()==0);
 		assertTrue("afternn remaining space is miscalculated", afternn.getRemainingSpace()==0);
 	}
-	@Test
+	//@Test
 	public void testPackEightTalkForTwoDayVolume() {
 		//arrange
 		TalkBuilder builder = new TalkBuilder();
@@ -130,6 +130,48 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		
 		assertTrue("d2Morning remaining space is miscalculated", day2.getFirst().getRemainingSpace()==0);
 		assertTrue("d2Afternn remaining space is miscalculated", day2.getLast().getRemainingSpace()==40);
+	}
+	@Test
+	public void testPack10TalkForTwoDayVolume() {
+		//arrange
+		TalkBuilder builder = new TalkBuilder();
+		int[] volumesInMin 	= new int[]{ 100, 50 };
+		List<Talk> talks 	= builder.buildAll(30,30,30,10,50,45,45,10,5,5,40);
+		TrackOptimizer to 	= new TrackOptimizer();
+		//act
+		to.pack(talks, volumesInMin);
+		//assert
+		Conference cnfe    = to.getResultContainers();
+		Iterator<Track> it = cnfe.iterator();
+		Track day1 		   = it.next();
+		Track day2 		   = it.next();
+
+		assertTrue("d1Morning remaining space is miscalculated", day1.getFirst().getRemainingSpace()==0);
+		assertTrue("d1Afternn remaining space is miscalculated", day1.getLast().getRemainingSpace()==0);
+		
+		assertTrue("d2Morning remaining space is miscalculated", day2.getFirst().getRemainingSpace()==0);
+		assertTrue("d2Afternn remaining space is miscalculated", day2.getLast().getRemainingSpace()==0);
+	}
+	@Test
+	public void testPackForGivenInputs() {
+		//arrange
+		TalkBuilder builder = new TalkBuilder();
+		int[] volumesInMin 	= new int[]{ 3*60, 4*60 };
+		List<Talk> talks 	= builder.buildAll(this.rawTalks);
+		TrackOptimizer to 	= new TrackOptimizer();
+		//act
+		to.pack(talks, volumesInMin);
+		//assert
+		Conference cnfe    = to.getResultContainers();
+		Iterator<Track> it = cnfe.iterator();
+		Track day1 		   = it.next();
+		Track day2 		   = it.next();
+
+		assertTrue("d1Morning remaining space is miscalculated", day1.getFirst().getRemainingSpace()==0);
+		assertTrue("d1Afternn remaining space is miscalculated", day1.getLast().getRemainingSpace()==0);
+		
+		assertTrue("d2Morning remaining space is miscalculated", day2.getFirst().getRemainingSpace()==0);
+		assertTrue("d2Afternn remaining space is miscalculated", day2.getLast().getRemainingSpace()==0);
 	}
 	@Test
 	public void testOptimizerAcceptsProperSingleLine() {

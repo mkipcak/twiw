@@ -17,7 +17,6 @@ public class TrackOptimizer {
             return t1.getValue() - t.getValue();
         }
     };
-	private static final int MAXSESSIONCOUNT_PERTRACK = 2;
 	Conference cfe;
 			
 	public Conference getResultContainers(){
@@ -27,21 +26,6 @@ public class TrackOptimizer {
 		List<Talk> talks = new ArrayList<Talk>();
 		talks.add(tk);
 		this.pack(talks, volumesInMin);
-	}
-	class Context{
-		Conference conf;
-		Track day;
-		Session sess;
-		SessionFactory sf;
-		
-		public void createSessionAndDayIfNeeded(){
-			this.sess = this.sf.create();
-			if(this.day.getSessionCount() == MAXSESSIONCOUNT_PERTRACK){
-				this.day = new Track(new ArrayList<Session>());
-				this.conf.add(this.day);
-			}
-			this.day.add(this.sess);
-		}
 	}
 	public void pack(List<Talk> given, int[] volumesInMin){
 		
@@ -75,10 +59,10 @@ public class TrackOptimizer {
 			if(ctx.sess.getRemainingSpace() > 0) {
 				boolean fits = ctx.sess.hasEnoughSpace(t);
 				if(!fits) {
-					System.out.println("searching.");
+					System.out.print("searching,");
 					int subAllocCount = allocate(ctx, sortedTalks, i, ctx.sess.getRemainingSpace());
 					allocCount += subAllocCount;
-					System.out.println("complete, "+subAllocCount+" allocated.");
+					System.out.println("search complete, "+subAllocCount+" allocated.");
 					ctx.createSessionAndDayIfNeeded();
 				}
 			} else {

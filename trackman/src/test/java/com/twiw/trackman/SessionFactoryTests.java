@@ -1,10 +1,11 @@
-package com.twiw.trackman.bean;
+package com.twiw.trackman;
 
 import junit.framework.TestCase;
 
 import org.junit.Test;
 
 import com.twiw.trackman.SessionFactory;
+import com.twiw.trackman.bean.Session;
 
 public class SessionFactoryTests extends TestCase{
 
