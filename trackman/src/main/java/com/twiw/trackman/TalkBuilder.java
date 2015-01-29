@@ -2,6 +2,8 @@ package com.twiw.trackman;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.twiw.trackman.bean.Talk;
 
@@ -11,21 +13,24 @@ public class TalkBuilder {
 	static final int LIGHTVAL_INMIN = 5;
 
 	public Talk build(String line){
+		
 		if(line == null) {
 			return null;
 		} 
-		else if(line.endsWith(LIGHTKEYWORD)){
+		else if(line.trim().endsWith(LIGHTKEYWORD)){
 			return new Talk(LIGHTVAL_INMIN);
 		}
 		else if(line.endsWith("min")){
-			String[] parts = line.split(" ");
-			String last = parts[parts.length-1];
-			String minAsStr = last.substring(0, last.length()-3);
-			return new Talk(Integer.parseInt(minAsStr));
+			Pattern linePattern = Pattern.compile("(.*?)(\\d+)(.*)");
+			Matcher m = linePattern.matcher(line);
+			if (m.matches()) {
+			  String title = m.group(1);
+			  String minAsStr = m.group(2);
+			  int volInMinutes = Integer.parseInt(minAsStr);
+			  return new Talk(title, volInMinutes);
+			}
 		}
-		else {
-			return null;
-		}
+		return null;
 	}
 	public List<Talk> buildAll(int... minutes){
 		List<Talk> l = new ArrayList<Talk>();
@@ -39,7 +44,7 @@ public class TalkBuilder {
 	}
 	public List<Talk> buildAll(String content) {
 		List<Talk> l = new ArrayList<Talk>();
-		String[] lines = content.split("\n");
+		String[] lines = content.trim().split("\n");
 		for (String line : lines) {
 			Talk talk = build(line);
 			if(talk != null) {
