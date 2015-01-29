@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Track {
+
 	private List<Session> sessions;
 	
 	public Track(List<Session> sessions) {
@@ -23,7 +24,7 @@ public class Track {
 		return sessions.add(e);
 	}
 
-	public int size() {
+	public int getSessionCount() {
 		return sessions.size();
 	}
 
@@ -33,4 +34,5 @@ public class Track {
 	public Session getLast(){
 		return sessions.get(sessions.size()-1);
 	}
+	
 }

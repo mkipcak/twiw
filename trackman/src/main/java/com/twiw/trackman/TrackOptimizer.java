@@ -17,6 +17,7 @@ public class TrackOptimizer {
             return t1.getValue() - t.getValue();
         }
     };
+	private static final int MAXSESSIONCOUNT_PERTRACK = 2;
 	Conference cfe;
 			
 	public Conference getResultContainers(){
@@ -27,31 +28,49 @@ public class TrackOptimizer {
 		talks.add(tk);
 		this.pack(talks, volumesInMin);
 	}
-	
+	class Context{
+		Conference conf;
+		Track day;
+		Session sess;
+		SessionFactory sf;
+	}
 	public void pack(List<Talk> given, int[] volumesInMin){
 		
-		List<Talk> talks = new ArrayList<Talk>();
-		talks.addAll(given);
-		Collections.sort(talks, DESCENDING_COMPARATOR);
+		List<Talk> sortedTalks = new ArrayList<Talk>();
+		sortedTalks.addAll(given);
+		Collections.sort(sortedTalks, DESCENDING_COMPARATOR);
 		
-		Session sess 		= null;
-		SessionFactory sf 	= new SessionFactory(volumesInMin);
-		Conference ctemp 	= new Conference(new ArrayList<Track>());
-		Track day 			= new Track(new ArrayList<Session>());
-		ctemp.add(day);
-		day.add(sess = sf.create());
-		for (Talk t : talks) {
-			boolean fits = sess.hasEnoughSpace(t);
-			if(!fits) {
-				sess = sf.create();
-				if(day.size() == 2){
-					day = new Track(new ArrayList<Session>());
-					ctemp.add(day);
-				}  
-				day.add(sess);
+		Context ctx = new Context();
+		ctx.sf 		= new SessionFactory(volumesInMin);
+		ctx.conf 	= new Conference(new ArrayList<Track>());
+		ctx.day 	= new Track(new ArrayList<Session>());
+		
+		ctx.conf.add(ctx.day);
+		ctx.day.add(ctx.sess = ctx.sf.create());
+		
+		this.allocate(ctx, sortedTalks, 0);
+		
+		this.cfe = ctx.conf;
+	}
+	private int allocate(Context ctx, List<Talk> sortedTalks, int startIndex) {
+		int allocatedCount = 0;
+		for (int i = startIndex; i < sortedTalks.size(); i++) {
+			Talk t = sortedTalks.get(i);
+			if(t.isAllocated()) {
+				continue;
 			}
-			sess.add(t);
+			boolean fits = ctx.sess.hasEnoughSpace(t);
+			if(!fits) {
+				
+				ctx.sess = ctx.sf.create();
+				if(ctx.day.getSessionCount() == MAXSESSIONCOUNT_PERTRACK){
+					ctx.day = new Track(new ArrayList<Session>());
+					ctx.conf.add(ctx.day);
+				}
+				ctx.day.add(ctx.sess);
+			}
+			ctx.sess.add(t);
 		}
-		this.cfe = ctemp;
+		return allocatedCount;
 	}
 }
