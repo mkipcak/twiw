@@ -1,5 +1,6 @@
 package com.twiw.trackman;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -7,7 +8,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.twiw.trackman.bean.Conference;
-import com.twiw.trackman.bean.Session;
 import com.twiw.trackman.bean.Talk;
 import com.twiw.trackman.bean.Track;
 
@@ -17,8 +17,8 @@ public class TrackOptimizer {
             return t1.getValue() - t.getValue();
         }
     };
-	Conference cfe;
-			
+	private Conference cfe;
+
 	public Conference getResultContainers(){
 		return cfe;
 	}
@@ -36,13 +36,17 @@ public class TrackOptimizer {
 		Context ctx = new Context();
 		ctx.sf 		= new SessionFactory(volumesInMin);
 		ctx.conf 	= new Conference(new ArrayList<Track>());
-		ctx.day 	= new Track(new ArrayList<Session>());
-		
-		ctx.conf.add(ctx.day);
+		ctx.addTrack();
 		ctx.day.add(ctx.sess = ctx.sf.create());
-		System.out.println("allocating["+sortedTalks.size()+"]{="+Arrays.toString(sortedTalks.toArray())+"}");
-		this.allocate(ctx, sortedTalks, 0, Integer.MAX_VALUE);
 		
+		int allocated = this.allocate(ctx, sortedTalks, 0, Integer.MAX_VALUE);
+		int remaining = given.size() - allocated;
+		
+		debug("pack completed: " + allocated + " of " + given.size() + " talks allocated,"+remaining+ " remaining");
+
+		ConferencePrinter printer = new ConferencePrinter();
+		printer.print(ctx.conf, new PrintWriter(System.out));
+
 		this.cfe = ctx.conf;
 	}
 	private int allocate(Context ctx, List<Talk> sortedTalks, int startIndex, int maxAllocVol) {
@@ -59,23 +63,27 @@ public class TrackOptimizer {
 			if(ctx.sess.getRemainingSpace() > 0) {
 				boolean fits = ctx.sess.hasEnoughSpace(t);
 				if(!fits) {
-					System.out.print("searching,");
+					debug("searching,");
 					int subAllocCount = allocate(ctx, sortedTalks, i, ctx.sess.getRemainingSpace());
 					allocCount += subAllocCount;
-					System.out.println("search complete, "+subAllocCount+" allocated.");
-					ctx.createSessionAndDayIfNeeded();
+					debug("search completed, "+subAllocCount+" allocated.");
+					ctx.addSessionIfNeededAddDay();
 				}
 			} else {
-				ctx.createSessionAndDayIfNeeded();
+				ctx.addSessionIfNeededAddDay();
 			}
 			allocCount++;
 			allocVol += t.getValue();
 			t.setAllocated(true);
 			ctx.sess.add(t);
-			System.out.println("#"+allocCount+"."+ t + " allocated in " + ctx.sess);
+			debug("#"+allocCount+"."+ t + " allocated in " + ctx.sess);
 			
 		}
 		return allocCount;
+	}
+	private void debug(String s) {
+		System.out.println(s);
+		
 	}
 	 
 }
