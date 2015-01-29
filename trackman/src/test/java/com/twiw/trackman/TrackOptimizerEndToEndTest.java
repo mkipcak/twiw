@@ -125,10 +125,11 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		Track day1 		   = it.next();
 		Track day2 		   = it.next();
 
-		assertTrue("d1Morning remaining space is miscalculated", day1.getFirst().getRemainingSpace()==0);
-		assertTrue("d1Afternn remaining space is miscalculated", day1.getLast().getRemainingSpace()==0);
+		assertTrue("d1Morning remaining space is miscalculated", day1.getFirst().getRemainingSpace()==5);
+		assertTrue("d1Afternn remaining space is miscalculated", day1.getLast().getRemainingSpace()==5);
 		
 		assertTrue("d2Morning remaining space is miscalculated", day2.getFirst().getRemainingSpace()==0);
+		assertTrue("d2Afternn remaining space is miscalculated", day2.getLast().getRemainingSpace()==40);
 	}
 	@Test
 	public void testOptimizerAcceptsProperSingleLine() {

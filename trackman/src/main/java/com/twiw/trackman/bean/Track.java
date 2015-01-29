@@ -34,5 +34,30 @@ public class Track {
 	public Session getLast(){
 		return sessions.get(sessions.size()-1);
 	}
-	
+	public int calculateVolume(){
+		int total = 0;
+		if(sessions != null) {
+			for (Session sess : sessions) {
+				total += sess.getVolume();
+			}
+		}
+		return total;
+	}
+	public int calculateRemainingSpace(){
+		int total = 0;
+		if(sessions != null) {
+			for (Session sess : sessions) {
+				total += sess.getRemainingSpace();
+			}
+		}
+		return total;
+	}
+	public String toString() {
+		
+		return "day(#" + Integer.toHexString(this.hashCode()).toUpperCase() 
+				+ ",["+(this.sessions==null?null:this.sessions.size())+"]"
+				+ ",rem="+calculateRemainingSpace()
+				+ ",vol="+calculateVolume()
+				+")";
+	}
 }

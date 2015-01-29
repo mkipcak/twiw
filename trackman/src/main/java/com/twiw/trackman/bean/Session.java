@@ -31,4 +31,8 @@ public class Session {
 	public int getRemainingSpace(){
 		return this.volume - this.usedSpace;
 	}
+	
+	public String toString(){
+		return "session(#"+Integer.toHexString(this.hashCode()).toUpperCase() + ",vol="+this.getVolume()+ ",rem="+this.getRemainingSpace()+")";
+	}
 }

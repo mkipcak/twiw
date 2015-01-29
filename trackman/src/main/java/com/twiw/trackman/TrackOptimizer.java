@@ -33,6 +33,15 @@ public class TrackOptimizer {
 		Track day;
 		Session sess;
 		SessionFactory sf;
+		
+		public void createSessionAndDayIfNeeded(){
+			this.sess = this.sf.create();
+			if(this.day.getSessionCount() == MAXSESSIONCOUNT_PERTRACK){
+				this.day = new Track(new ArrayList<Session>());
+				this.conf.add(this.day);
+			}
+			this.day.add(this.sess);
+		}
 	}
 	public void pack(List<Talk> given, int[] volumesInMin){
 		
@@ -47,30 +56,42 @@ public class TrackOptimizer {
 		
 		ctx.conf.add(ctx.day);
 		ctx.day.add(ctx.sess = ctx.sf.create());
-		
-		this.allocate(ctx, sortedTalks, 0);
+		System.out.println("allocating["+sortedTalks.size()+"]{="+Arrays.toString(sortedTalks.toArray())+"}");
+		this.allocate(ctx, sortedTalks, 0, Integer.MAX_VALUE);
 		
 		this.cfe = ctx.conf;
 	}
-	private int allocate(Context ctx, List<Talk> sortedTalks, int startIndex) {
-		int allocatedCount = 0;
+	private int allocate(Context ctx, List<Talk> sortedTalks, int startIndex, int maxAllocVol) {
+		int allocCount = 0;
+		int allocVol = 0;
 		for (int i = startIndex; i < sortedTalks.size(); i++) {
+			if(allocVol >= maxAllocVol) {
+				break;
+			}
 			Talk t = sortedTalks.get(i);
-			if(t.isAllocated()) {
+			if(t.isAllocated()||t.getValue() > maxAllocVol) {
 				continue;
 			}
-			boolean fits = ctx.sess.hasEnoughSpace(t);
-			if(!fits) {
-				
-				ctx.sess = ctx.sf.create();
-				if(ctx.day.getSessionCount() == MAXSESSIONCOUNT_PERTRACK){
-					ctx.day = new Track(new ArrayList<Session>());
-					ctx.conf.add(ctx.day);
+			if(ctx.sess.getRemainingSpace() > 0) {
+				boolean fits = ctx.sess.hasEnoughSpace(t);
+				if(!fits) {
+					System.out.println("searching.");
+					int subAllocCount = allocate(ctx, sortedTalks, i, ctx.sess.getRemainingSpace());
+					allocCount += subAllocCount;
+					System.out.println("complete, "+subAllocCount+" allocated.");
+					ctx.createSessionAndDayIfNeeded();
 				}
-				ctx.day.add(ctx.sess);
+			} else {
+				ctx.createSessionAndDayIfNeeded();
 			}
+			allocCount++;
+			allocVol += t.getValue();
+			t.setAllocated(true);
 			ctx.sess.add(t);
+			System.out.println("#"+allocCount+"."+ t + " allocated in " + ctx.sess);
+			
 		}
-		return allocatedCount;
+		return allocCount;
 	}
+	 
 }

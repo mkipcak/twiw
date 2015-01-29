@@ -26,5 +26,31 @@ public class Conference {
 	public Iterator<Track> iterator() {
 		return tracks.iterator();
 	}
- 	
+	public int calculateVolume(){
+		int total = 0;
+		if(tracks != null) {
+			for (Track t : tracks) {
+				total += t.calculateVolume();
+			}
+		}
+		return total;
+	}
+	public int calculateRemainingSpace(){
+		int total = 0;
+		if(tracks != null) {
+			for (Track t : tracks) {
+				total += t.calculateRemainingSpace();
+			}
+		}
+		return total;
+	}
+	public String toString() {
+		
+		return "conf(#" 
+				+ Integer.toHexString(this.hashCode()).toUpperCase()
+				+ ",["+(this.tracks==null?null:this.tracks.size())+"]"
+				+ ",remaining="+calculateRemainingSpace()
+				+ ",volume="+calculateVolume()
+				+")";
+	}
 }

@@ -23,4 +23,8 @@ public class Talk {
 	public void setAllocated(boolean allocated) {
 		this.allocated = allocated;
 	}
+	
+	public String toString() {
+		return "talk(#" + Integer.toHexString(this.hashCode()).toUpperCase() + ",val="+this.getValue()+")";
+	}
 }
