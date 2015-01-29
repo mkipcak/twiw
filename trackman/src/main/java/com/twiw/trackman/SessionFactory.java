@@ -21,6 +21,7 @@ public class SessionFactory {
 			return null;
 		}
 		int vol = findNextVol();
-		return new Session(vol);
+		Session sess = new Session(vol);
+		return sess;
 	};
 }

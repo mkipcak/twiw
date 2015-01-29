@@ -51,7 +51,7 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		TrackOptimizer to 	= new TrackOptimizer();
 		//act
 		Talk tk = builder.build("xxx 1min");
-		to.pack(tk, volumesInMin);
+		to.pack(tk, volumesInMin, builder);
 		//assert
 		Conference cnfe = to.getResultContainers();
 		assertTrue("hasNoResult", cnfe.size() == 1);
@@ -67,7 +67,7 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		TrackOptimizer to 	= new TrackOptimizer();
 		//act
 		Talk tk = builder.build("xxx 1min");
-		to.pack(tk, volumesInMin);
+		to.pack(tk, volumesInMin, builder);
 		//assert
 		Conference cnfe = to.getResultContainers();
 		assertTrue("hasNoResult", cnfe.size() == 1);
@@ -83,7 +83,7 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		TrackOptimizer to 	= new TrackOptimizer();
 		//act
 		Talk tk = builder.build("xxx 1min");
-		to.pack(tk, volumesInMin);
+		to.pack(tk, volumesInMin, builder);
 		//assert
 		Conference cnfe = to.getResultContainers();
 
@@ -99,7 +99,7 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		TrackOptimizer to 	= new TrackOptimizer();
 		//act
 		List<Talk> talks = builder.buildAll("xxx 1min\nyyy 1min\n");
-		to.pack(talks, volumesInMin);
+		to.pack(talks, volumesInMin, builder);
 		//assert
 		Conference cnfe = to.getResultContainers();
 		
@@ -118,7 +118,7 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		List<Talk> talks 	= builder.buildAll(30,30,30,10,50,45,45,10);
 		TrackOptimizer to 	= new TrackOptimizer();
 		//act
-		to.pack(talks, volumesInMin);
+		to.pack(talks, volumesInMin, builder);
 		//assert
 		Conference cnfe    = to.getResultContainers();
 		Iterator<Track> it = cnfe.iterator();
@@ -139,7 +139,7 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		List<Talk> talks 	= builder.buildAll(30,30,30,10,50,45,45,10,5,5,40);
 		TrackOptimizer to 	= new TrackOptimizer();
 		//act
-		to.pack(talks, volumesInMin);
+		to.pack(talks, volumesInMin, builder);
 		//assert
 		Conference cnfe    = to.getResultContainers();
 		Iterator<Track> it = cnfe.iterator();
@@ -160,18 +160,17 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		List<Talk> talks 	= builder.buildAll(this.rawTalks);
 		TrackOptimizer to 	= new TrackOptimizer();
 		//act
-		to.pack(talks, volumesInMin);
+		to.pack(talks, volumesInMin, builder);
 		//assert
 		Conference cnfe    = to.getResultContainers();
 		Iterator<Track> it = cnfe.iterator();
 		Track day1 		   = it.next();
 		Track day2 		   = it.next();
 
-		assertTrue("d1Morning remaining space is miscalculated", day1.getFirst().getRemainingSpace()==0);
-		assertTrue("d1Afternn remaining space is miscalculated", day1.getLast().getRemainingSpace()==0);
-		
-		assertTrue("d2Morning remaining space is miscalculated", day2.getFirst().getRemainingSpace()==0);
-		assertTrue("d2Afternn remaining space is miscalculated", day2.getLast().getRemainingSpace()==0);
+		assertTrue("day1 morning is missing", day1.getFirst() != null);
+		assertTrue("day1 afternn is missing", day1.getLast() != null);
+		assertTrue("day2 morning is missing", day2.getFirst() != null);
+		assertTrue("day2 afternn is missing", day2.getLast() != null);
 	}
 	@Test
 	public void testOptimizerAcceptsProperSingleLine() {
@@ -181,7 +180,7 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		TrackOptimizer to 	= new TrackOptimizer();
 		//act
 		Talk tk = builder.build("Writing Fast Tests Against Enterprise Rails 60min");
-		to.pack(tk, volumesInMin);
+		to.pack(tk, volumesInMin, builder);
 		//assert
 		assertTrue("hasNoResult", to.getResultContainers() != null);
 	}
