@@ -3,12 +3,13 @@ package com.twiw.trackman.bean;
 import java.util.Iterator;
 import java.util.List;
 
-public class Track {
-
+public class Track implements Iterable<Session>{
+	public int id;
 	private List<Session> sessions;
 	
-	public Track(List<Session> sessions) {
+	public Track(int id, List<Session> sessions) {
 		super();
+		this.id = id;
 		this.sessions = sessions;
 	}
 
@@ -59,5 +60,9 @@ public class Track {
 				+ ",rem="+calculateRemainingSpace()
 				+ ",vol="+calculateVolume()
 				+")";
+	}
+
+	public int getId() {
+		return id;
 	}
 }

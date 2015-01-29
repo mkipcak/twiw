@@ -1,9 +1,10 @@
 package com.twiw.trackman.bean;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public class Session {
+public class Session implements Iterable<Talk>{
 	private int volume;
 	private int usedSpace;
 	private List<Talk> talks = new ArrayList<Talk>();
@@ -34,5 +35,9 @@ public class Session {
 	
 	public String toString(){
 		return "session(#"+Integer.toHexString(this.hashCode()).toUpperCase() + ",vol="+this.getVolume()+ ",rem="+this.getRemainingSpace()+")";
+	}
+
+	public Iterator<Talk> iterator() {
+		return talks.iterator();
 	}
 }

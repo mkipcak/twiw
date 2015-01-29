@@ -3,7 +3,7 @@ package com.twiw.trackman.bean;
 import java.util.Iterator;
 import java.util.List;
 
-public class Conference {
+public class Conference implements Iterable<Track>{
 	private List<Track> tracks;
 
 	public Conference(List<Track> tz) {
