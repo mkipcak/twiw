@@ -8,18 +8,22 @@ import com.twiw.trackman.bean.Track;
 
 class Context{
 	static final int MAXSESSIONCOUNT_PERTRACK = 2;
-	
+	private int trackCounter = 1;
 	Conference conf;
 	Track day;
 	Session sess;
 	SessionFactory sf;
 	
-	public void createSessionAndDayIfNeeded(){
+	public void addSessionIfNeededAddDay(){
 		this.sess = this.sf.create();
 		if(this.day.getSessionCount() == MAXSESSIONCOUNT_PERTRACK){
-			this.day = new Track(new ArrayList<Session>());
-			this.conf.add(this.day);
+			this.addTrack();
 		}
 		this.day.add(this.sess);
+	}
+	
+	public void addTrack(){
+		this.day = new Track(trackCounter++, new ArrayList<Session>());
+		this.conf.add(this.day);
 	}
 }
