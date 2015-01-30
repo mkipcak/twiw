@@ -248,14 +248,57 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		to.pack(talks, volumesInMin, builder, new String[]{"09:00AM","01:00PM"});
 		//assert
 		Conference cnfe    = to.getResultContainers();
-		/*
+		
 		boolean inRange = !cnfe.isEmpty(); 
 		for(Track trck: cnfe) {
-			trck.getFirst().;
-			for(Session sess: trck){
-				inRange = eachSessHaveMultipleTasks && sess.size() > 1;
+			Talk morningFirst = trck.getFirst().iterator().next();
+			Talk morningLast = null;
+			for(Talk t: trck.getFirst()){
+				morningLast = t;
 			}
+			int result 	= morningFirst.getStartTime().compareTo("09:00AM");
+			int result2 = morningLast.getStartTime().compareTo("12:00PM");
+			inRange = inRange && result == 0 && result2 <= 0;
+			
 		}
-		assertTrue("dont have both",  eachSessHaveMultipleTasks);*/
+		assertTrue("not in range",  inRange);
+	}
+	/*
+	Afternoon sessions begin at 1pm and must finish in time for the networking event.
+	The networking event can start no earlier than 4:00 and no later than 5:00.
+	No talk title has numbers in it.
+	All talk lengths are either in minutes (not hours) or lightning (5 minutes).
+	Presenters will be very punctual; there needs to be no gap between sessions.
+	*/
+	@Test
+	public void testPackAfternoonSessionsBetween1PMAndBeforeNetworkingEvent(){
+		//arrange
+		TalkBuilder builder = new TalkBuilder();
+		int[] volumesInMin 	= new int[]{ 3*60, 4*60 };
+		List<Talk> talks 	= builder.buildAll(this.rawTalks);
+		TrackOptimizer to 	= new TrackOptimizer();
+		//act
+		to.pack(talks, volumesInMin, builder, new String[]{"09:00AM","01:00PM"});
+		//assert
+		Conference cnfe    = to.getResultContainers();
+		
+		boolean inRange = !cnfe.isEmpty(); 
+		for(Track trck: cnfe) {
+			Talk afternoonFirst = trck.getLast().iterator().next();
+			Talk afternoonLast = null;
+			Talk networkEvent = null;
+			for(Talk t: trck.getLast()){
+				if(t.getTitle().equals(TalkBuilder.TALKTITLE_NETWORK)){
+					networkEvent = t;
+				} else {
+					afternoonLast = t;
+				}
+			}
+			int result 	= afternoonFirst.getStartTime().compareTo("01:00PM");
+			int result2 = afternoonLast.getStartTime().compareTo(networkEvent.getStartTime());
+			inRange = inRange && result == 0 && result2 < 0;
+			
+		}
+		assertTrue("not in range",  inRange);
 	}
 }
