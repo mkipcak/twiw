@@ -18,7 +18,7 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 	String rawTalks;
 	@Before
 	protected void setUp() throws Exception {
-		this.rawTalks = "Writing Fast Tests Against Enterprise Rails 60min\n"+
+		this.rawTalks = "1Writing Fast Tests Against Enterprise Rails 60min\n"+
 						"Overdoing it in Python 45min\n"+
 						"Lua for the Masses 30min\n"+
 						"Ruby Errors from Mismatched Gem Versions 45min\n"+
@@ -231,11 +231,6 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 	}
 	/*
 	Morning sessions begin at 9am and must finish by 12 noon, for lunch.
-	Afternoon sessions begin at 1pm and must finish in time for the networking event.
-	The networking event can start no earlier than 4:00 and no later than 5:00.
-	No talk title has numbers in it.
-	All talk lengths are either in minutes (not hours) or lightning (5 minutes).
-	Presenters will be very punctual; there needs to be no gap between sessions.
 	*/
 	@Test
 	public void testPackMorningSessionsBetween9AMAnd12Noon(){
@@ -265,10 +260,6 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 	}
 	/*
 	Afternoon sessions begin at 1pm and must finish in time for the networking event.
-	The networking event can start no earlier than 4:00 and no later than 5:00.
-	No talk title has numbers in it.
-	All talk lengths are either in minutes (not hours) or lightning (5 minutes).
-	Presenters will be very punctual; there needs to be no gap between sessions.
 	*/
 	@Test
 	public void testPackAfternoonSessionsBetween1PMAndBeforeNetworkingEvent(){
@@ -297,6 +288,63 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 			int result 	= afternoonFirst.getStartTime().compareTo("01:00PM");
 			int result2 = afternoonLast.getStartTime().compareTo(networkEvent.getStartTime());
 			inRange = inRange && result == 0 && result2 < 0;
+			
+		}
+		assertTrue("not in range",  inRange);
+	}
+	/*
+	The networking event can start no earlier than 4:00 and no later than 5:00.
+	*/
+	@Test
+	public void testPackNetworkingEventIsBetween400and500(){
+		//arrange
+		TalkBuilder builder = new TalkBuilder();
+		int[] volumesInMin 	= new int[]{ 3*60, 4*60 };
+		List<Talk> talks 	= builder.buildAll(this.rawTalks);
+		TrackOptimizer to 	= new TrackOptimizer();
+		//act
+		to.pack(talks, volumesInMin, builder, new String[]{"09:00AM","01:00PM"});
+		//assert
+		Conference cnfe    = to.getResultContainers();
+		
+		boolean inRange = !cnfe.isEmpty(); 
+		for(Track trck: cnfe) {
+			Talk networkEvent = null;
+			for(Talk t: trck.getLast()){
+				networkEvent = t;
+			}
+			int result 	= networkEvent.getStartTime().compareTo("04:00PM");
+			int result2 = networkEvent.getStartTime().compareTo("05:00PM");
+			inRange = inRange && result >= 0 && result2 <= 0;
+			
+		}
+		assertTrue("not in range",  inRange);
+	}
+	/*
+	All talk lengths are either in minutes (not hours) or lightning (5 minutes).
+	Presenters will be very punctual; there needs to be no gap between sessions.
+	*/
+	@Test
+	public void testNoTalkTitleHasNumbersInIt(){
+		//arrange
+		TalkBuilder builder = new TalkBuilder();
+		int[] volumesInMin 	= new int[]{ 3*60, 4*60 };
+		List<Talk> talks 	= builder.buildAll(this.rawTalks);
+		TrackOptimizer to 	= new TrackOptimizer();
+		//act
+		to.pack(talks, volumesInMin, builder, new String[]{"09:00AM","01:00PM"});
+		//assert
+		Conference cnfe    = to.getResultContainers();
+		
+		boolean inRange = !cnfe.isEmpty(); 
+		for(Track trck: cnfe) {
+			Talk networkEvent = null;
+			for(Talk t: trck.getLast()){
+				networkEvent = t;
+			}
+			int result 	= networkEvent.getStartTime().compareTo("04:00PM");
+			int result2 = networkEvent.getStartTime().compareTo("05:00PM");
+			inRange = inRange && result >= 0 && result2 <= 0;
 			
 		}
 		assertTrue("not in range",  inRange);
