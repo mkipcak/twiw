@@ -50,9 +50,6 @@ public class TrackOptimizer {
 		debug("pack completed: " + allocated + " of " + given.size() + " talks allocated,"+remaining+ " remaining");
 		
  		this.applyTimeInterval(sessStartTimes, ctx);
-		
-		ConferencePrinter printer = new ConferencePrinter();
-		printer.print(ctx.getConference(), new PrintWriter(System.out));
 
 		this.cfe = ctx.getConference();
 	}
