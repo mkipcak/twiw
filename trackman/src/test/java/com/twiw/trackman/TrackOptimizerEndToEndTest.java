@@ -18,7 +18,7 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 	String rawTalks;
 	@Before
 	protected void setUp() throws Exception {
-		this.rawTalks = "1Writing Fast Tests Against Enterprise Rails 60min\n"+
+		this.rawTalks = "Writing Fast Tests Against Enterprise Rails 60min\n"+
 						"Overdoing it in Python 45min\n"+
 						"Lua for the Masses 30min\n"+
 						"Ruby Errors from Mismatched Gem Versions 45min\n"+
@@ -43,73 +43,6 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
-	@Test
-	public void testPack0MinVolumeFor1MinTalk() {
-		//arrange
-		int[] volumesInMin 	= new int[]{ 1 };
-		TalkBuilder builder = new TalkBuilder();
-		TrackOptimizer to 	= new TrackOptimizer();
-		//act
-		Talk tk = builder.build("xxx 1min");
-		to.pack(tk, volumesInMin, builder,new String[]{"09:00AM","01:00PM"});
-		//assert
-		Conference cnfe = to.getResultContainers();
-		assertTrue("hasNoResult", cnfe.size() == 1);
-		Track day 		= cnfe.iterator().next();
-		Session morning = day.iterator().next();
-		assertTrue("remaining space is miscalculated", morning.getRemainingSpace()==0);
-	}
-	@Test
-	public void testPack1MinVolumeFor1MinTalk() {
-		//arrange
-		int[] volumesInMin 	= new int[]{ 1 };
-		TalkBuilder builder = new TalkBuilder();
-		TrackOptimizer to 	= new TrackOptimizer();
-		//act
-		Talk tk = builder.build("xxx 1min");
-		to.pack(tk, volumesInMin, builder,new String[]{"09:00AM","01:00PM"});
-		//assert
-		Conference cnfe = to.getResultContainers();
-		assertTrue("hasNoResult", cnfe.size() == 1);
-		Track day 		= cnfe.iterator().next();
-		Session morning = day.iterator().next();
-		assertTrue("remaining space is miscalculated", morning.getRemainingSpace()==0);
-	}
-	@Test
-	public void testPack_3MinVolume_To_1MinTalk() {
-		//arrange
-		int[] volumesInMin 	= new int[]{ 3 };
-		TalkBuilder builder = new TalkBuilder();
-		TrackOptimizer to 	= new TrackOptimizer();
-		//act
-		Talk tk = builder.build("xxx 1min");
-		to.pack(tk, volumesInMin, builder,new String[]{"09:00AM","01:00PM"});
-		//assert
-		Conference cnfe = to.getResultContainers();
-
-		Track day 		= cnfe.iterator().next();
-		Session morning = day.iterator().next();
-		assertTrue("remaining space is miscalculated", morning.getRemainingSpace()==2);
-	}
-	@Test
-	public void testPack_2MinVolume_To_2X_1MinTalk() {
-		//arrange
-		int[] volumesInMin 	= new int[]{ 1, 1 };
-		TalkBuilder builder = new TalkBuilder();
-		TrackOptimizer to 	= new TrackOptimizer();
-		//act
-		List<Talk> talks = builder.buildAll("xxx 1min\nyyy 1min\n");
-		to.pack(talks, volumesInMin, builder, new String[]{"09:00AM","01:00PM"});
-		//assert
-		Conference cnfe = to.getResultContainers();
-		
-		Track day 		= cnfe.iterator().next();
-		Iterator<Session> dayIterator = day.iterator();
-		Session morning = dayIterator.next();
-		Session afternn = dayIterator.next();
-		assertTrue("morning remaining space is miscalculated", morning.getRemainingSpace()==0);
-		assertTrue("afternn remaining space is miscalculated", afternn.getRemainingSpace()==0);
-	}
 	//@Test
 	public void testPackEightTalkForTwoDayVolume() {
 		//arrange
@@ -130,47 +63,6 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		
 		assertTrue("d2Morning remaining space is miscalculated", day2.getFirst().getRemainingSpace()==0);
 		assertTrue("d2Afternn remaining space is miscalculated", day2.getLast().getRemainingSpace()==40);
-	}
-	@Test
-	public void testPack10TalkForTwoDayVolume() {
-		//arrange
-		TalkBuilder builder = new TalkBuilder();
-		int[] volumesInMin 	= new int[]{ 100, 50 };
-		List<Talk> talks 	= builder.buildAll(30,30,30,10,50,45,45,10,5,5,40);
-		TrackOptimizer to 	= new TrackOptimizer();
-		//act
-		to.pack(talks, volumesInMin, builder, new String[]{"09:00AM","01:00PM"});
-		//assert
-		Conference cnfe    = to.getResultContainers();
-		Iterator<Track> it = cnfe.iterator();
-		Track day1 		   = it.next();
-		Track day2 		   = it.next();
-
-		assertTrue("d1Morning remaining space is miscalculated", day1.getFirst().getRemainingSpace()==0);
-		assertTrue("d1Afternn remaining space is miscalculated", day1.getLast().getRemainingSpace()==0);
-		
-		assertTrue("d2Morning remaining space is miscalculated", day2.getFirst().getRemainingSpace()==0);
-		assertTrue("d2Afternn remaining space is miscalculated", day2.getLast().getRemainingSpace()==0);
-	}
-	@Test
-	public void testPackForGivenInputs() {
-		//arrange
-		TalkBuilder builder = new TalkBuilder();
-		int[] volumesInMin 	= new int[]{ 3*60, 4*60 };
-		List<Talk> talks 	= builder.buildAll(this.rawTalks);
-		TrackOptimizer to 	= new TrackOptimizer();
-		//act
-		to.pack(talks, volumesInMin, builder, new String[]{"09:00AM","01:00PM"});
-		//assert
-		Conference cnfe    = to.getResultContainers();
-		Iterator<Track> it = cnfe.iterator();
-		Track day1 		   = it.next();
-		Track day2 		   = it.next();
-
-		assertTrue("day1 morning is missing", day1.getFirst() != null);
-		assertTrue("day1 afternn is missing", day1.getLast() != null);
-		assertTrue("day2 morning is missing", day2.getFirst() != null);
-		assertTrue("day2 afternn is missing", day2.getLast() != null);
 	}
 	@Test
 	public void testOptimizerAcceptsProperSingleLine() {
@@ -321,11 +213,10 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		assertTrue("not in range",  inRange);
 	}
 	/*
-	All talk lengths are either in minutes (not hours) or lightning (5 minutes).
 	Presenters will be very punctual; there needs to be no gap between sessions.
 	*/
 	@Test
-	public void testNoTalkTitleHasNumbersInIt(){
+	public void testPackNoGapBetweenSessions(){
 		//arrange
 		TalkBuilder builder = new TalkBuilder();
 		int[] volumesInMin 	= new int[]{ 3*60, 4*60 };
@@ -336,17 +227,17 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		//assert
 		Conference cnfe    = to.getResultContainers();
 		
-		boolean inRange = !cnfe.isEmpty(); 
+		boolean matches = !cnfe.isEmpty(); 
 		for(Track trck: cnfe) {
-			Talk networkEvent = null;
-			for(Talk t: trck.getLast()){
-				networkEvent = t;
+			for(Session sess: trck){
+				int usedSpace1 = sess.getVolume() - sess.getRemainingSpace();
+				int usedSpace2 = 0;
+				for(Talk t: sess){
+					usedSpace2 += t.getValue();
+				}
+				matches = matches && usedSpace1 == usedSpace2;
 			}
-			int result 	= networkEvent.getStartTime().compareTo("04:00PM");
-			int result2 = networkEvent.getStartTime().compareTo("05:00PM");
-			inRange = inRange && result >= 0 && result2 <= 0;
-			
 		}
-		assertTrue("not in range",  inRange);
+		assertTrue("gap found",  matches);
 	}
 }

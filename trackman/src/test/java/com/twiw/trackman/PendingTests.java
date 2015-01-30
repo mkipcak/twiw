@@ -8,7 +8,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ 
 	SessionFactoryTests.class,
 	TalkBuilderTests.class,
-	TrackOptimizerEndToEndTest.class 
+	TrackOptimizerEndToEndTest.class,
+	TrackOptimizerSupportTests.class,
 })
 public class PendingTests {
 
