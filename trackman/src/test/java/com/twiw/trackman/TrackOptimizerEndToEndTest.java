@@ -51,7 +51,7 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		TrackOptimizer to 	= new TrackOptimizer();
 		//act
 		Talk tk = builder.build("xxx 1min");
-		to.pack(tk, volumesInMin, builder);
+		to.pack(tk, volumesInMin, builder,new String[]{"09:00AM","01:00PM"});
 		//assert
 		Conference cnfe = to.getResultContainers();
 		assertTrue("hasNoResult", cnfe.size() == 1);
@@ -67,7 +67,7 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		TrackOptimizer to 	= new TrackOptimizer();
 		//act
 		Talk tk = builder.build("xxx 1min");
-		to.pack(tk, volumesInMin, builder);
+		to.pack(tk, volumesInMin, builder,new String[]{"09:00AM","01:00PM"});
 		//assert
 		Conference cnfe = to.getResultContainers();
 		assertTrue("hasNoResult", cnfe.size() == 1);
@@ -83,7 +83,7 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		TrackOptimizer to 	= new TrackOptimizer();
 		//act
 		Talk tk = builder.build("xxx 1min");
-		to.pack(tk, volumesInMin, builder);
+		to.pack(tk, volumesInMin, builder,new String[]{"09:00AM","01:00PM"});
 		//assert
 		Conference cnfe = to.getResultContainers();
 
@@ -99,7 +99,7 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		TrackOptimizer to 	= new TrackOptimizer();
 		//act
 		List<Talk> talks = builder.buildAll("xxx 1min\nyyy 1min\n");
-		to.pack(talks, volumesInMin, builder);
+		to.pack(talks, volumesInMin, builder, new String[]{"09:00AM","01:00PM"});
 		//assert
 		Conference cnfe = to.getResultContainers();
 		
@@ -118,7 +118,7 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		List<Talk> talks 	= builder.buildAll(30,30,30,10,50,45,45,10);
 		TrackOptimizer to 	= new TrackOptimizer();
 		//act
-		to.pack(talks, volumesInMin, builder);
+		to.pack(talks, volumesInMin, builder, new String[]{"09:00AM","01:00PM"});
 		//assert
 		Conference cnfe    = to.getResultContainers();
 		Iterator<Track> it = cnfe.iterator();
@@ -139,7 +139,7 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		List<Talk> talks 	= builder.buildAll(30,30,30,10,50,45,45,10,5,5,40);
 		TrackOptimizer to 	= new TrackOptimizer();
 		//act
-		to.pack(talks, volumesInMin, builder);
+		to.pack(talks, volumesInMin, builder, new String[]{"09:00AM","01:00PM"});
 		//assert
 		Conference cnfe    = to.getResultContainers();
 		Iterator<Track> it = cnfe.iterator();
@@ -160,7 +160,7 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		List<Talk> talks 	= builder.buildAll(this.rawTalks);
 		TrackOptimizer to 	= new TrackOptimizer();
 		//act
-		to.pack(talks, volumesInMin, builder);
+		to.pack(talks, volumesInMin, builder, new String[]{"09:00AM","01:00PM"});
 		//assert
 		Conference cnfe    = to.getResultContainers();
 		Iterator<Track> it = cnfe.iterator();
@@ -180,8 +180,82 @@ public class TrackOptimizerEndToEndTest extends TestCase {
 		TrackOptimizer to 	= new TrackOptimizer();
 		//act
 		Talk tk = builder.build("Writing Fast Tests Against Enterprise Rails 60min");
-		to.pack(tk, volumesInMin, builder);
+		to.pack(tk, volumesInMin, builder, new String[]{"09:00AM","01:00PM"});
 		//assert
 		assertTrue("hasNoResult", to.getResultContainers() != null);
+	}
+	
+	/*
+	The conference has multiple tracks each of which has a morning and afternoon session.
+	*/
+	@Test
+	public void testPackEachTrackHasAMorningAndAfternoonSession() {
+		//arrange
+		TalkBuilder builder = new TalkBuilder();
+		int[] volumesInMin 	= new int[]{ 3*60, 4*60 };
+		List<Talk> talks 	= builder.buildAll(this.rawTalks);
+		TrackOptimizer to 	= new TrackOptimizer();
+		//act
+		to.pack(talks, volumesInMin, builder, new String[]{"09:00AM","01:00PM"});
+		//assert
+		Conference cnfe    = to.getResultContainers();
+		
+		boolean eachHaveBoth = !cnfe.isEmpty(); 
+		for(Track trck: cnfe) {
+			eachHaveBoth = eachHaveBoth && trck.size() == 2;
+		}
+		assertTrue("dont have both",  eachHaveBoth);
+	}
+	/*
+	Each session contains multiple talks.
+	*/
+	@Test
+	public void testPackEachSessionContainsMultipleTasks() {
+		//arrange
+		TalkBuilder builder = new TalkBuilder();
+		int[] volumesInMin 	= new int[]{ 3*60, 4*60 };
+		List<Talk> talks 	= builder.buildAll(this.rawTalks);
+		TrackOptimizer to 	= new TrackOptimizer();
+		//act
+		to.pack(talks, volumesInMin, builder, new String[]{"09:00AM","01:00PM"});
+		//assert
+		Conference cnfe    = to.getResultContainers();
+		
+		boolean eachSessHaveMultipleTasks = !cnfe.isEmpty(); 
+		for(Track trck: cnfe) {
+			for(Session sess: trck){
+				eachSessHaveMultipleTasks = eachSessHaveMultipleTasks && sess.size() > 1;
+			}
+		}
+		assertTrue("dont have both",  eachSessHaveMultipleTasks);
+	}
+	/*
+	Morning sessions begin at 9am and must finish by 12 noon, for lunch.
+	Afternoon sessions begin at 1pm and must finish in time for the networking event.
+	The networking event can start no earlier than 4:00 and no later than 5:00.
+	No talk title has numbers in it.
+	All talk lengths are either in minutes (not hours) or lightning (5 minutes).
+	Presenters will be very punctual; there needs to be no gap between sessions.
+	*/
+	@Test
+	public void testPackMorningSessionsBetween9AMAnd12Noon(){
+		//arrange
+		TalkBuilder builder = new TalkBuilder();
+		int[] volumesInMin 	= new int[]{ 3*60, 4*60 };
+		List<Talk> talks 	= builder.buildAll(this.rawTalks);
+		TrackOptimizer to 	= new TrackOptimizer();
+		//act
+		to.pack(talks, volumesInMin, builder, new String[]{"09:00AM","01:00PM"});
+		//assert
+		Conference cnfe    = to.getResultContainers();
+		/*
+		boolean inRange = !cnfe.isEmpty(); 
+		for(Track trck: cnfe) {
+			trck.getFirst().;
+			for(Session sess: trck){
+				inRange = eachSessHaveMultipleTasks && sess.size() > 1;
+			}
+		}
+		assertTrue("dont have both",  eachSessHaveMultipleTasks);*/
 	}
 }

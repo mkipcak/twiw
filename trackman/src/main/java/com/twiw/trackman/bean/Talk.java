@@ -5,6 +5,7 @@ public class Talk {
 	private String title;
 	private int value;
 	private boolean allocated;
+	public String startTime;
 	
 	public Talk(String title, int valueInMin, boolean lightining) {
 		super();
@@ -27,6 +28,7 @@ public class Talk {
 	
 	public String toString() {
 		return "talk(#" + Integer.toHexString(this.hashCode()).toUpperCase() 
+				+ ",startAt="+this.getStartTime()
 				+ ",val="+this.getValue()
 				+ ",title="+this.getTitle()
 				+")";
@@ -37,5 +39,13 @@ public class Talk {
 	}
 	public boolean isLightining() {
 		return lightining;
+	}
+
+	public String getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
 	}
 }

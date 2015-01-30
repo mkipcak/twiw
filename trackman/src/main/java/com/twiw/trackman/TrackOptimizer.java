@@ -1,9 +1,14 @@
 package com.twiw.trackman;
 
 import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import com.twiw.trackman.bean.Conference;
@@ -12,7 +17,12 @@ import com.twiw.trackman.bean.Talk;
 import com.twiw.trackman.bean.Track;
 
 public class TrackOptimizer {
+
+	static final String[] SESSION_START_TIMES = {"09:00AM","01:00PM"}; 
+	static final String LUNCH_TIME = "12:00PM";
+	static final String HH_MMAA = "hh:mmaa";
 	static final int MAXSESSIONCOUNT_PERTRACK = 2;
+	
 	public static final Comparator<Talk> DESCENDING_COMPARATOR = new Comparator<Talk>() {
         public int compare(Talk t, Talk t1) {
             return t1.getValue() - t.getValue();
@@ -23,12 +33,12 @@ public class TrackOptimizer {
 	public Conference getResultContainers(){
 		return cfe;
 	}
-	public void pack(Talk tk, int[] volumesInMin, TalkBuilder builder){
+	public void pack(Talk tk, int[] volumesInMin, TalkBuilder builder, String[] sessStartTimes){
 		List<Talk> talks = new ArrayList<Talk>();
 		talks.add(tk);
-		this.pack(talks, volumesInMin, builder);
+		this.pack(talks, volumesInMin, builder, sessStartTimes);
 	}
-	public void pack(List<Talk> given, int[] volumesInMin,TalkBuilder builder){
+	public void pack(List<Talk> given, int[] volumesInMin,TalkBuilder builder, String[] sessStartTimes){
 
 		List<Talk> sortedTalks = new ArrayList<Talk>();
 		sortedTalks.addAll(given);
@@ -44,17 +54,62 @@ public class TrackOptimizer {
 		
 		debug("pack completed: " + allocated + " of " + given.size() + " talks allocated,"+remaining+ " remaining");
 		
+ 		this.applyTimeInterval(ctx, sessStartTimes);
+		
 		ConferencePrinter printer = new ConferencePrinter();
 		printer.print(ctx.getConference(), new PrintWriter(System.out));
 
 		this.cfe = ctx.getConference();
 	}
+	public void applyTimeInterval(Context ctx, String[] sessStartTimes){
+		SimpleDateFormat df = new SimpleDateFormat(HH_MMAA);
+		for(Track trck: ctx.getConference()) {
+			int sessIdx = 0;
+			Session lastSessionOfTheDay = null;
+			Talk lastTalkOfTheDay = null;
+			for(Session sess: trck){
+				String dtStart = sessStartTimes[sessIdx++];
+				lastSessionOfTheDay = sess;
+				try {
+					Date dt 		= df.parse(dtStart);
+					Calendar cldr	= GregorianCalendar.getInstance();
+					cldr.setTime(dt);
+					for (Talk t : sess) {
+						lastTalkOfTheDay = t;
+						String st = df.format(cldr.getTime());
+						t.setStartTime(st);
+						cldr.add(Calendar.MINUTE, t.getValue());
+					}
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+			if(lastSessionOfTheDay != null 
+					&& lastTalkOfTheDay != null){
+				
+				Date dt;
+				try {
+					dt = df.parse(lastTalkOfTheDay.getStartTime());
+					Calendar cldr	= GregorianCalendar.getInstance();
+					cldr.setTime(dt);
+					cldr.add(Calendar.MINUTE, lastTalkOfTheDay.getValue());
+					String stNetworkStart = df.format(cldr.getTime());
+					
+					Talk networkEvent = ctx.getTalkBuilder().buildNoVolume(TalkBuilder.TALKTITLE_NETWORK);
+					networkEvent.setStartTime(stNetworkStart);
+					lastSessionOfTheDay.add(networkEvent);
+					
+				} catch (ParseException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+		
+	}
 	
 	public void addSessionIfNeededAddDay(Context ctx){
-		Session previous = ctx.getSession();
 		ctx.setSession(ctx.getSessionFactory().create());
 		if(ctx.getTrack().getSessionCount() == MAXSESSIONCOUNT_PERTRACK){
-			previous.add(ctx.getTalkBuilder().buildNoVolume(TalkBuilder.TALKTITLE_NETWORK));
 			this.addTrack(ctx);
 		}
 		ctx.getTrack().add(ctx.getSession());

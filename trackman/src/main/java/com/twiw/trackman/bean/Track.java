@@ -17,8 +17,8 @@ public class Track implements Iterable<Session>{
 		return sessions.iterator();
 	}
  
-	public boolean isEmpty() {
-		return sessions.isEmpty();
+	public int size() {
+		return sessions.size();
 	}
 
 	public boolean add(Session e) {

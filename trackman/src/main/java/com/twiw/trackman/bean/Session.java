@@ -40,4 +40,8 @@ public class Session implements Iterable<Talk>{
 	public Iterator<Talk> iterator() {
 		return talks.iterator();
 	}
+
+	public int size() {
+		return talks.size();
+	}
 }
