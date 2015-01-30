@@ -18,8 +18,7 @@ public class Session implements Iterable<Talk>{
 		return volume;
 	}
 	public boolean hasEnoughSpace(Talk talk) {
-		return this.usedSpace == 0 
-				|| this.volume >= (this.usedSpace + talk.getValue());
+		return this.volume >= (this.usedSpace + talk.getValue());
 	}
 	public boolean add(Talk talk) {
 		if(hasEnoughSpace(talk)) {

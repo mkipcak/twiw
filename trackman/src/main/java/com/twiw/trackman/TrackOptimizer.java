@@ -41,8 +41,8 @@ public class TrackOptimizer {
 		
 		Context ctx = new Context(builder,new SessionFactory(volumesInMin),new Conference(new ArrayList<Track>()));
 		
-		this.addTrack(ctx);
-		ctx.getTrack().add(ctx.setSession(ctx.getSessionFactory().create()));
+		//this.addTrack(ctx);
+		//ctx.getTrack().add(ctx.setSession(ctx.getSessionFactory().create()));
 		
 		int allocated = this.allocate(ctx, sortedTalks, 0, Integer.MAX_VALUE);
 		int remaining = given.size() - allocated;
@@ -99,14 +99,14 @@ public class TrackOptimizer {
 			String stNetworkStart = df.format(cldr.getTime());
 			
 			//improve comparisions
-			int result = stNetworkStart.compareTo(ctx.networkEventLowValue);
-			if(result < 0) {
-				stNetworkStart = ctx.networkEventLowValue;
-			}
-			int result2 = stNetworkStart.compareTo(ctx.networkEventHighValue);
-			if(result2 > 0) {
-				stNetworkStart = ctx.networkEventHighValue;
-			}
+			int result = df.parse(stNetworkStart).compareTo(df.parse(ctx.networkEventLowValue));
+            if(result < 0) {
+                 stNetworkStart = ctx.networkEventLowValue;
+            }
+            int result2 = df.parse(stNetworkStart).compareTo(df.parse(ctx.networkEventHighValue));
+            if(result2 > 0) {
+                 stNetworkStart = ctx.networkEventHighValue;
+            }
 
 			Talk networkEvent = ctx.getTalkBuilder().buildNoVolume(TalkBuilder.TALKTITLE_NETWORK);
 			networkEvent.setStartTime(stNetworkStart);
@@ -137,8 +137,9 @@ public class TrackOptimizer {
 	
 	public void addSessionIfNeededAddDay(Context ctx){
 		ctx.setSession(ctx.getSessionFactory().create());
-		if(ctx.getTrack().getSessionCount() == ctx.maxSessionPerTrack){
-			this.addTrack(ctx);
+		if(ctx.getTrack() == null
+                || ctx.getTrack().getSessionCount() == ctx.maxSessionPerTrack){
+				this.addTrack(ctx);
 		}
 		ctx.getTrack().add(ctx.getSession());
 	}
@@ -156,13 +157,16 @@ public class TrackOptimizer {
 				break;
 			}
 			Talk t = sortedTalks.get(i);
-			if(t.isAllocated()||t.getValue() > maxAllocVol) {
-				continue;
-			}
-			if(ctx.getSession().getRemainingSpace() > 0) {
-				boolean fits = ctx.getSession().hasEnoughSpace(t);
-				if(!fits) {
-					debug("searching,");
+            if(t.isAllocated()
+                   || t.getValue() > maxAllocVol
+                   || t.getValue() > ctx.getSessionFactory().findLargestVolumeInaSession()) {
+                 continue;
+            }
+            if(ctx.getSession() != null
+                   && ctx.getSession().getRemainingSpace() > 0) {
+                   boolean fits = ctx.getSession().hasEnoughSpace(t);
+                   if(!fits) {
+                                           debug("searching,");
 					int subAllocCount = allocate(ctx, sortedTalks, i, ctx.getSession().getRemainingSpace());
 					allocCount += subAllocCount;
 					debug("search completed, "+subAllocCount+" allocated.");

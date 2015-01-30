@@ -27,14 +27,32 @@ public class TalkBuilder {
 		}
 		return null;
 	}
-	private Talk createForRegularLine(String line){
-		Pattern linePattern = Pattern.compile("(.*?)(\\d+)(.*)");
-		Matcher m = linePattern.matcher(line);
-		if (m.matches()) {
-		  return new Talk(m.group(1).trim(), Integer.parseInt(m.group(2)), false);
-		}
-		return null;
-	}
+	private Talk createForRegularLine(String line) {
+        Pattern linePattern = Pattern.compile("(.*?)(\\d+)(.*)");
+        Matcher m = linePattern.matcher(line);
+        if (!m.matches()) {
+                        return null;
+        }
+        String g1 = m.group(1);
+        String g2 = m.group(2);
+        String g3 = m.group(3);
+        //check g1
+        if(g1.trim().length() == 0){
+                        return null;
+        }
+        //check g2
+        int vol = -1;
+        try {
+                        vol = Integer.parseInt(g2);
+        } catch (NumberFormatException e) {
+                        return null;
+        }
+        //check g3
+        if(!g3.equals(REGULARLINE_MINUTESUFFIX)){
+                        return null;
+        }
+        return new Talk(g1.trim(), vol, false);                                  
+}
 	private Talk createForLightinging(String line){
 		Pattern linePattern = Pattern.compile("(.*?)"+LIGHTKEYWORD);
 		Matcher m = linePattern.matcher(line);
@@ -54,8 +72,9 @@ public class TalkBuilder {
 		return l;
 	}
 	public List<Talk> buildAll(String content) {
-		List<Talk> l = new ArrayList<Talk>();
-		String[] lines = content.trim().split("\n");
+        List<Talk> l = new ArrayList<Talk>();
+        content = content.replaceAll("\\r\\n", "\n");
+        String[] lines = content.trim().split("\n");
 		for (String line : lines) {
 			Talk talk = build(line);
 			if(talk != null) {
