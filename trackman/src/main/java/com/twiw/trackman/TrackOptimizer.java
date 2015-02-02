@@ -83,13 +83,13 @@ public class TrackOptimizer {
 	}
 	private void addLunch(Session firstSessionOfTheDay, Context ctx) {
 		Talk networkEvent = ctx.getTalkBuilder().buildNoVolume(TalkBuilder.TALKTITLE_LUNCH);
-		networkEvent.setStartTime(ctx.lunchTime);
+		networkEvent.setStartTime(ctx.getLunchTime());
 		firstSessionOfTheDay.add(networkEvent);
 	}
 	private void addNetworkEvent(Session lastSessionOfTheDay, Talk lastTalkOfTheDay, Context ctx) {
 		 
 		try {
-			SimpleDateFormat df = new SimpleDateFormat(ctx.timeFormat);
+			SimpleDateFormat df = new SimpleDateFormat(ctx.getTimeFormat());
 			
 			Date dt = df.parse(lastTalkOfTheDay.getStartTime());
 			Calendar cldr	= GregorianCalendar.getInstance();
@@ -99,13 +99,13 @@ public class TrackOptimizer {
 			String stNetworkStart = df.format(cldr.getTime());
 			
 			//improve comparisions
-			int result = df.parse(stNetworkStart).compareTo(df.parse(ctx.networkEventLowValue));
+			int result = df.parse(stNetworkStart).compareTo(df.parse(ctx.getNetworkEventLowValue()));
             if(result < 0) {
-                 stNetworkStart = ctx.networkEventLowValue;
+                 stNetworkStart = ctx.getNetworkEventLowValue();
             }
-            int result2 = df.parse(stNetworkStart).compareTo(df.parse(ctx.networkEventHighValue));
+            int result2 = df.parse(stNetworkStart).compareTo(df.parse(ctx.getNetworkEventHighValue()));
             if(result2 > 0) {
-                 stNetworkStart = ctx.networkEventHighValue;
+                 stNetworkStart = ctx.getNetworkEventHighValue();
             }
 
 			Talk networkEvent = ctx.getTalkBuilder().buildNoVolume(TalkBuilder.TALKTITLE_NETWORK);
@@ -118,7 +118,7 @@ public class TrackOptimizer {
 	}
 	private Talk applyTimeInterval(Session sess, Talk lastTalkOfTheDay, String dtStart, Context ctx) {
 		try {
-			SimpleDateFormat df = new SimpleDateFormat(ctx.timeFormat);
+			SimpleDateFormat df = new SimpleDateFormat(ctx.getTimeFormat());
 			
 			Date dt 		= df.parse(dtStart);
 			Calendar cldr	= GregorianCalendar.getInstance();
@@ -138,7 +138,7 @@ public class TrackOptimizer {
 	public void addSessionIfNeededAddDay(Context ctx){
 		ctx.setSession(ctx.getSessionFactory().create());
 		if(ctx.getTrack() == null
-                || ctx.getTrack().getSessionCount() == ctx.maxSessionPerTrack){
+                || ctx.getTrack().getSessionCount() == ctx.getMaxSessionPerTrack()){
 				this.addTrack(ctx);
 		}
 		ctx.getTrack().add(ctx.getSession());

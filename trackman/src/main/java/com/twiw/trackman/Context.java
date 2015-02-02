@@ -6,12 +6,12 @@ import com.twiw.trackman.bean.Track;
 
 class Context{
 	//given rules & states
-	String[] sessionStartTimes = {"09:00AM","01:00PM"}; 
-	String networkEventHighValue = "05:00PM";
-	String networkEventLowValue = "04:00PM";
-	String lunchTime = "12:00PM";
-	String timeFormat = "hh:mmaa";
-	int maxSessionPerTrack = 2;
+	private String[] sessionStartTimes = {"09:00AM","01:00PM"}; 
+	private String networkEventHighValue = "05:00PM";
+	private String networkEventLowValue = "04:00PM";
+	private String lunchTime = "12:00PM";
+	private String timeFormat = "hh:mmaa";
+	private int maxSessionPerTrack = 2;
 	
 	int trackCounter = 1;
 	
@@ -29,35 +29,77 @@ class Context{
 		this.setConference(conf);
 	}
 	public Conference getConference() {
-		return conf;
+		return getConf();
 	}
 	public void setConference(Conference conf) {
-		this.conf = conf;
+		this.setConf(conf);
 	}
-	TalkBuilder getTalkBuilder() {
+	public TalkBuilder getTalkBuilder() {
 		return talkBuilder;
 	}
-	void setTalkBuilder(TalkBuilder talkBuilder) {
+	public 	void setTalkBuilder(TalkBuilder talkBuilder) {
 		this.talkBuilder = talkBuilder;
 	}
-	Session getSession() {
+	public Session getSession() {
 		return session;
 	}
-	Session setSession(Session sess) {
+	public Session setSession(Session sess) {
 		this.session = sess;
 		return sess;
 	}
-	Track getTrack() {
+	public Track getTrack() {
 		return track;
 	}
-	void setTrack(Track track) {
+	public void setTrack(Track track) {
 		this.track = track;
 	}
-	SessionFactory getSessionFactory() {
+	public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
-	void setSessionFactory(SessionFactory sf) {
+	public void setSessionFactory(SessionFactory sf) {
 		this.sessionFactory = sf;
+	}
+	public String[] getSessionStartTimes() {
+		return sessionStartTimes;
+	}
+	public void setSessionStartTimes(String[] sessionStartTimes) {
+		this.sessionStartTimes = sessionStartTimes;
+	}
+	public String getNetworkEventHighValue() {
+		return networkEventHighValue;
+	}
+	public void setNetworkEventHighValue(String networkEventHighValue) {
+		this.networkEventHighValue = networkEventHighValue;
+	}
+	public String getNetworkEventLowValue() {
+		return networkEventLowValue;
+	}
+	public void setNetworkEventLowValue(String networkEventLowValue) {
+		this.networkEventLowValue = networkEventLowValue;
+	}
+	public String getLunchTime() {
+		return lunchTime;
+	}
+	public void setLunchTime(String lunchTime) {
+		this.lunchTime = lunchTime;
+	}
+	public String getTimeFormat() {
+		return timeFormat;
+	}
+	public void setTimeFormat(String timeFormat) {
+		this.timeFormat = timeFormat;
+	}
+	public Conference getConf() {
+		return conf;
+	}
+	public void setConf(Conference conf) {
+		this.conf = conf;
+	}
+	public int getMaxSessionPerTrack() {
+		return maxSessionPerTrack;
+	}
+	public void setMaxSessionPerTrack(int maxSessionPerTrack) {
+		this.maxSessionPerTrack = maxSessionPerTrack;
 	}
 	
 
